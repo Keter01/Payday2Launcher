@@ -14,7 +14,8 @@ MainWindow::MainWindow(Backend *backend, QWidget *parent)
     , m_backend(backend)
 {
     ui->setupUi(this);
-    connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::onMoveButtonClicked);
+    connect(ui->launchButton, &QPushButton::clicked, this, &MainWindow::onMoveButtonClicked);
+    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 }
 
 MainWindow::~MainWindow()
