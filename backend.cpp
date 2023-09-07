@@ -64,38 +64,49 @@ void Backend::moveAllFiles(const QString &sourcePath, const QString &destPath)
     }
 }
 
-void Backend::saveConfig(const QString &path, const QString &config)
+void Backend::saveConfig(const QString &path, const QMap<QString, QVariant> &config)
 {
     // create the file if it doesn't exist
     QFile file(path);
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    // file.open(QIODevice::WriteOnly | QIODevice::Text);
 
-    QTextStream stream(&file);
-    stream << config;
-    file.close();
+    QJsonObject obj;
 }
 
 void Backend::loadConfig(const QString &path)
 {
     QFile file(path);
-
-    if (file.open(QIoDevice::ReadOnly | QIODevice::Text))
-    {
-        QByteArray data = file.readAll();
-        QJsonDocument doc(QJsonDocument::fromJson(data));
-
-        if (!doc.isNull())
+    /*
+        if (file.open(QIoDevice::ReadOnly | QIODevice::Text))
         {
-            QJsonObject obj = doc.object();
+            QByteArray data = file.readAll();
+            QJsonDocument doc(QJsonDocument::fromJson(data));
 
-            // Dictionnary for config options that can store either a bool or a string
-            QMap<QString, QVariant> configOptions;
+            if (!doc.isNull())
+            {
+                QJsonObject obj = doc.object();
 
-            // Get config options
-            configOptions["matchmaking"] = obj["matchmaking"].toString();
-        }
-        else
-        {
-            emit resultReady("Error: Unable to open file for reading.");
-        }
-    }
+                // Dictionnary for config options that can store either a bool or a string
+                QMap<QString, QVariant> configOptions;
+
+                // Get config options
+                for (const QString &key : obj.keys())
+                {
+                    QJsonValue value = obj.value(key);
+
+                    if (value.isBool())
+                    {
+                        configOptions.insert(key, value.toBool());
+                    }
+                    else if (value.isString())
+                    {
+                        configOptions.insert(key, value.toString());
+                    }
+                }
+            }
+            else
+            {
+                emit resultReady("Error: Unable to open file for reading.");
+            }
+        } */
+}

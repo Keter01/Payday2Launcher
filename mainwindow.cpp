@@ -2,20 +2,23 @@
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 }
 
 MainWindow::MainWindow(Backend *backend, QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , m_backend(backend)
+    : QMainWindow(parent), ui(new Ui::MainWindow), m_backend(backend)
 {
     ui->setupUi(this);
     connect(ui->launchButton, &QPushButton::clicked, this, &MainWindow::onMoveButtonClicked);
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
+    // for every button in groupButton
+    for (int i = 0; i < ui->buttonGroup->buttons().size(); i++)
+    {
+        printf("Button %d\n", ui->buttonGroup->buttons().at(i)->objectName().toInt());
+    }
 }
 
 MainWindow::~MainWindow()
@@ -23,7 +26,8 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::onMoveButtonClicked() {
+void MainWindow::onMoveButtonClicked()
+{
     QString sourcePath = "test/test";
     QString destPath = "test/test1";
 
