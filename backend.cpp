@@ -66,15 +66,36 @@ void Backend::moveAllFiles(const QString &sourcePath, const QString &destPath)
 
 void Backend::saveConfig(const QString &path, const QString &config)
 {
+    // create the file if it doesn't exist
     QFile file(path);
-
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        emit resultReady("Error: Unable to open file for writing.");
-        return;
-    }
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
 
     QTextStream stream(&file);
     stream << config;
     file.close();
 }
+
+void Backend::loadConfig(const QString &path)
+{
+    QFile file(path);
+
+    if (file.open(QIoDevice::ReadOnly | QIODevice::Text))
+    {
+        QByteArray data = file.readAll();
+        QJsonDocument doc(QJsonDocument::fromJson(data));
+
+        if (!doc.isNull())
+        {
+            QJsonObject obj = doc.object();
+
+            // Dictionnary for config options that can store either a bool or a string
+            QMap<QString, QVariant> configOptions;
+
+            // Get config options
+            configOptions["matchmaking"] = obj["matchmaking"].toString();
+        }
+        else
+        {
+            emit resultReady("Error: Unable to open file for reading.");
+        }
+    }
