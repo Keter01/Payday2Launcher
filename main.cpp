@@ -10,14 +10,14 @@ int main(int argc, char *argv[])
     QFile f(":qdarkstyle/dark/style.qss");
     if (!f.exists())
     {
-        printf("Unable to set stylesheet, file not found\n");
+        qDebug() << "Unable to set stylesheet, file not found\n";
     }
     else
     {
         f.open(QFile::ReadOnly | QFile::Text);
         QTextStream ts(&f);
         a.setStyleSheet(ts.readAll());
-        printf("Stylesheet successfully loaded\n");
+        qDebug() << "Stylesheet successfully loaded";
     }
 
     Backend backend;

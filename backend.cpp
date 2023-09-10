@@ -17,7 +17,7 @@ void Backend::moveFolder(const QString &sourcePath, const QString &destPath)
 
     if (sourceInfo.isFile())
     {
-        if (QFile::rename(sourcePath, destPath))
+        if (QFile::copy(sourcePath, destPath))
         {
             emit resultReady("File moved successfully: " + sourceInfo.fileName());
         }
@@ -28,15 +28,22 @@ void Backend::moveFolder(const QString &sourcePath, const QString &destPath)
     }
     else if (sourceInfo.isDir())
     {
-        QDir dir;
+        QDir destDir(destPath);
 
-        if (dir.rename(sourcePath, destPath))
+        if (!destDir.exists())
         {
-            emit resultReady("Folder moved successfully.");
+            destDir.mkpath(".");
         }
-        else
+
+        QDir sourceDir(sourcePath);
+        QStringList fileList = sourceDir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+
+        for (const QString &fileName : fileList)
         {
-            emit resultReady("Error: Unable to move folder");
+            QString sourceFilePath = sourceDir.filePath(fileName);
+            QString destinationFilePath = destDir.filePath(fileName);
+
+            moveFolder(sourceFilePath, destinationFilePath);
         }
     }
 }
@@ -61,6 +68,49 @@ void Backend::moveAllFiles(const QString &sourcePath, const QString &destPath)
         QString destinationFilePath = destDir.filePath(fileName);
 
         moveFolder(sourceFilePath, destinationFilePath);
+    }
+}
+
+void Backend::deleteAllFolder(const QString &path)
+{
+    QDir dir(path);
+
+    if (!dir.exists())
+    {
+        emit resultReady("Error: Folder does not exist.");
+        return;
+    }
+
+    QFileInfoList fileList = dir.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+
+    for (const QFileInfo &fileInfo : fileList)
+    {
+        QString filePath = fileInfo.filePath();
+
+        if (fileInfo.isFile())
+        {
+            QFile file(filePath);
+
+            if (file.remove())
+            {
+                emit resultReady("File deleted successfully: " + fileInfo.fileName());
+            }
+            else
+            {
+                emit resultReady("Error: Unable to delete file: " + fileInfo.fileName());
+            }
+        }
+        else if (fileInfo.isDir())
+        {
+            if (QDir().rmdir(filePath))
+            {
+                emit resultReady("Folder deleted successfully: " + fileInfo.fileName());
+            }
+            else
+            {
+                emit resultReady("Error: Unable to delete folder: " + fileInfo.fileName());
+            }
+        }
     }
 }
 
@@ -109,4 +159,19 @@ void Backend::loadConfig(const QString &path)
                 emit resultReady("Error: Unable to open file for reading.");
             }
         } */
+}
+
+void Backend::startExe(const char *path, const char *name, const char *args)
+{
+    // command: "cd "C:\Program Files (x86)\Steam\steamapps\common\PAYDAY 2" && start payday2_win32_release.exe"
+
+    std::string command("cd ");
+    // add the path
+    command += std::string(path);
+    command += std::string(" && start ");
+    // add the name
+    command += std::string(name);
+    // add the args
+    command += std::string(args);
+    system(command.c_str());
 }

@@ -3,9 +3,13 @@
 
 #include <QMainWindow>
 #include "backend.h"
+#include <string>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -16,9 +20,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     MainWindow(Backend *backend, QWidget *parent = nullptr);
     ~MainWindow();
-    void onMoveButtonClicked();
 
-private slots:
+public slots:
+    void onPushButtonClicked();
 
 private:
     Ui::MainWindow *ui;
