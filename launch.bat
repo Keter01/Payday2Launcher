@@ -1,0 +1,1 @@
+cd "C:\Program Files (x86)\Steam\steamapps\common\PAYDAY 2\Payday2Launcher" && start "" "Payday2Launcher.exe"
