@@ -1,2 +1,8 @@
 .vscode
 resources/qdarkstyle/dark/rc
+mods_rush/**
+mods_normal/**
+mod_overrides_rush/**
+mod_overrides_normal/**
+config.json
+debug.txt
