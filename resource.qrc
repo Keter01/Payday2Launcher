@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>resources/Payday2-logo.png</file>
+    </qresource>
+    <qresource prefix="/resources">
+        <file>resources/logo.png</file>
+    </qresource>
+</RCC>
