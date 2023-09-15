@@ -21,11 +21,10 @@ int main(int argc, char *argv[])
     }
 
     Backend backend;
-    MainWindow w(&backend);
-    w.show();
-
     QObject::connect(&backend, &Backend::resultReady, [](const QString &result)
                      { qDebug() << result; });
+    MainWindow w(&backend);
+    w.show();
 
     return a.exec();
 }

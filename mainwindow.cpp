@@ -13,9 +13,38 @@ MainWindow::MainWindow(Backend *backend, QWidget *parent)
     ui->setupUi(this);
     // execute backend function openPayday
     connect(ui->launchButton, &QPushButton::clicked, this, &MainWindow::onPushButtonClicked);
-    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    // default options
     ui->epicMMButton->setChecked(true);
-    ui->rushButton->setChecked(true);
+    ui->normalButton->setChecked(true);
+    connect(m_backend, &Backend::configReady, [this](const QJsonObject &result)
+            {
+        for (const QString &key : result.keys())
+        {
+            if (key == "mm")
+            {
+                if (result.value(key) == "steam")
+                {
+                    ui->steamMMButton->setChecked(true);
+                }
+                else
+                {
+                    ui->epicMMButton->setChecked(true);
+                }
+            }
+            else if (key == "profile")
+            {
+                if (result.value(key) == "rush")
+                {
+                    ui->rushButton->setChecked(true);
+                }
+                else
+                {
+                    ui->normalButton->setChecked(true);
+                }
+            }
+        } });
+    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    backend->loadConfig();
 
     // for every button in groupButton
     for (int i = 0; i < ui->buttonGroup->buttons().size(); i++)
@@ -34,7 +63,8 @@ void MainWindow::onPushButtonClicked()
 {
     m_backend->deleteAllFolder("../mods");
     m_backend->deleteAllFolder("../assets/mod_overrides");
-    std::string args = " -skip-intro";
+    std::string args = " -skip_intro";
+    QJsonObject config;
     for (int i = 0; i < ui->groupBoxMM->children().size(); i++)
     {
         // if it's a radio button
@@ -47,6 +77,12 @@ void MainWindow::onPushButtonClicked()
             {
                 // add -steammm to args
                 args += " -steamMM";
+                config.insert("mm", "steam");
+                qDebug() << "steam";
+            }
+            else if (radioButton->isChecked() && radioButton->objectName() == "epicMMButton")
+            {
+                config.insert("mm", "epic");
             }
         }
     }
@@ -66,6 +102,7 @@ void MainWindow::onPushButtonClicked()
                 {
                     profileFolder = "mods_rush";
                     overrideFolder = "mod_overrides_rush";
+                    config.insert("profile", "rush");
                 }
             }
             else if (ui->groupBoxProfile->children().at(i)->objectName() == "normalButton")
@@ -77,12 +114,15 @@ void MainWindow::onPushButtonClicked()
                 {
                     profileFolder = "mods_normal";
                     overrideFolder = "mod_overrides_normal";
+                    config.insert("profile", "normal");
                 }
             }
         }
     }
-    qDebug() << profileFolder;
     m_backend->moveAllFiles(profileFolder, "../mods");
     m_backend->moveAllFiles(overrideFolder, "../assets/mod_overrides");
     m_backend->startExe("C:\\Program Files (x86)\\Steam\\steamapps\\common\\PAYDAY 2", "payday2_win32_release.exe", args.c_str());
+    m_backend->saveConfig(config);
+    // close window
+    close();
 }
