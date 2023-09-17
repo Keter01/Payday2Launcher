@@ -185,14 +185,14 @@ void Backend::loadConfig()
 
                 debug("Mod overrides folder updated for rush profile.");
             }
-            if (config.contains("hashes_normal") && config.value("hashes_normal").toObject().value("modsHash").toString() != hashDir("mods"))
+            if (config.contains("hashes_normal") && config.value("hashes_normal").toObject().value("modsHash").toString() != hashDir("../mods"))
             {
                 deleteAllFolder("mods_normal");
                 moveAllFiles("mods", "mods_normal");
 
                 debug("Mods folder updated for normal profile.");
             }
-            if (config.contains("hashes_normal") && config.value("hashes_normal").toObject().value("modOverridesHash").toString() != hashDir("mod_overrides"))
+            if (config.contains("hashes_normal") && config.value("hashes_normal").toObject().value("modOverridesHash").toString() != hashDir("../assets/mod_overrides"))
             {
                 deleteAllFolder("mod_overrides_normal");
                 moveAllFiles("mod_overrides", "mod_overrides_normal");
